@@ -18,7 +18,7 @@ with open("data/students.txt", "r") as f:
         student_names.append(name)
         student_ids.append(sid)
 
-# Load assignments (3-line format)
+# Load assignments 
 assignment_names = []
 assignment_ids = []
 assignment_points = []
@@ -134,3 +134,6 @@ elif choice == "3":
             plt.show()
         else:
             print("No scores found")
+
+
+
