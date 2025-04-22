@@ -6,40 +6,41 @@ print("2. Assignment statistics")
 print("3. Assignment graph")
 choice = input("Enter your selection: ")
 
+# Load students
 student_names = []
 student_ids = []
 
 with open("data/students.txt", "r") as f:
     for line in f:
-        parts = line.strip().split()
-        if len(parts) >= 2:
-            sid = parts[-1]
-            name = " ".join(parts[:-1])
-            student_names.append(name)
-            student_ids.append(sid)
+        line = line.strip()
+        sid = ''.join(filter(str.isdigit, line))
+        name = line[len(sid):].strip()
+        student_names.append(name)
+        student_ids.append(sid)
 
+# Load assignments (3-line format)
 assignment_names = []
 assignment_ids = []
 assignment_points = []
 
 with open("data/assignments.txt", "r") as f:
-    for line in f:
-        parts = line.strip().split(",")
-        if len(parts) == 3:
-            assignment_names.append(parts[0])
-            assignment_ids.append(parts[1])
-            try:
-                assignment_points.append(int(parts[2]))
-            except ValueError:
-                assignment_points.append(0)
+    lines = [line.strip() for line in f if line.strip() != ""]
+    for i in range(0, len(lines), 3):
+        name = lines[i]
+        aid = lines[i + 1]
+        points = int(lines[i + 2])
+        assignment_names.append(name)
+        assignment_ids.append(aid)
+        assignment_points.append(points)
 
+# Load submissions (pipe-separated: sid|aid|score)
 all_submissions = []
 submission_files = os.listdir("data/submissions")
 
 for file in submission_files:
     with open(os.path.join("data/submissions", file), "r") as f:
         for line in f:
-            parts = line.strip().split(",")
+            parts = line.strip().split("|")
             if len(parts) == 3:
                 try:
                     sid, aid, percent = parts
@@ -47,6 +48,7 @@ for file in submission_files:
                 except ValueError:
                     continue
 
+# Option 1: Student grade
 if choice == "1":
     name_input = input("What is the student's name: ")
     found = False
@@ -79,6 +81,7 @@ if choice == "1":
         else:
             print("No submissions found")
 
+# Option 2: Assignment statistics
 elif choice == "2":
     assignment_input = input("What is the assignment name: ")
     found = False
@@ -104,6 +107,7 @@ elif choice == "2":
         else:
             print("No scores found")
 
+# Option 3: Assignment graph
 elif choice == "3":
     assignment_input = input("What is the assignment name: ")
     found = False
