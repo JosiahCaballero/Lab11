@@ -12,10 +12,11 @@ student_ids = []
 with open("data/students.txt", "r") as f:
     for line in f:
         parts = line.strip().split()
-        sid = parts[-1]
-        name = " ".join(parts[:-1])
-        student_names.append(name)
-        student_ids.append(sid)
+        if len(parts) >= 2:
+            sid = parts[-1]
+            name = " ".join(parts[:-1])
+            student_names.append(name)
+            student_ids.append(sid)
 
 assignment_names = []
 assignment_ids = []
@@ -24,9 +25,13 @@ assignment_points = []
 with open("data/assignments.txt", "r") as f:
     for line in f:
         parts = line.strip().split(",")
-        assignment_names.append(parts[0])
-        assignment_ids.append(parts[1])
-        assignment_points.append(int(parts[2]))
+        if len(parts) == 3:
+            assignment_names.append(parts[0])
+            assignment_ids.append(parts[1])
+            try:
+                assignment_points.append(int(parts[2]))
+            except ValueError:
+                assignment_points.append(0)
 
 all_submissions = []
 submission_files = os.listdir("data/submissions")
@@ -34,8 +39,13 @@ submission_files = os.listdir("data/submissions")
 for file in submission_files:
     with open(os.path.join("data/submissions", file), "r") as f:
         for line in f:
-            sid, aid, percent = line.strip().split(",")
-            all_submissions.append((sid, aid, float(percent)))
+            parts = line.strip().split(",")
+            if len(parts) == 3:
+                try:
+                    sid, aid, percent = parts
+                    all_submissions.append((sid, aid, float(percent)))
+                except ValueError:
+                    continue
 
 if choice == "1":
     name_input = input("What is the student's name: ")
@@ -43,7 +53,7 @@ if choice == "1":
     student_index = -1
 
     for i in range(len(student_names)):
-        if student_names[i] == name_input:
+        if student_names[i].lower() == name_input.lower():
             found = True
             student_index = i
             break
@@ -74,7 +84,7 @@ elif choice == "2":
     found = False
     aid = ""
     for i in range(len(assignment_names)):
-        if assignment_names[i] == assignment_input:
+        if assignment_names[i].lower() == assignment_input.lower():
             found = True
             aid = assignment_ids[i]
             break
@@ -99,7 +109,7 @@ elif choice == "3":
     found = False
     aid = ""
     for i in range(len(assignment_names)):
-        if assignment_names[i] == assignment_input:
+        if assignment_names[i].lower() == assignment_input.lower():
             found = True
             aid = assignment_ids[i]
             break
